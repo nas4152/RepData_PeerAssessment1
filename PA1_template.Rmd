@@ -111,3 +111,30 @@ Because missing values were omitted previously, replacing missing values
 increased the total steps for every day in which missing values were present.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+A function was created to determine if a date was a weekday or a weekend.
+Then a column was added to the dataset with the results of applying the 
+function to the date of the data.  
+```{r}
+weekend <- function(x) {
+        ifelse(weekdays(x) == "Saturday"|weekdays(x) == "Sunday",
+               "Weekend","Weekday")
+}
+
+library(dplyr)
+filldata <- mutate(filldata, day = weekend(date))
+filldata$day <- as.factor(filldata$day)
+```
+
+The means were calculated for each interval on the weekday and weekends, then
+plotted.
+
+```{r}
+wmeans <- aggregate.data.frame(filldata$steps, list(filldata$interval, filldata$day), "mean")
+colnames(wmeans) <- c("interval", "day", "steps")
+ggplot(wmeans) +
+        geom_line(aes(interval, steps, color = day)) +
+        facet_wrap(~day, ncol = 1, nrow = 2) +
+        guides(color = FALSE)
+```
+
