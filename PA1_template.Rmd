@@ -8,11 +8,25 @@ output:
 
 ## Loading and preprocessing the data
 
+First, the dataset is unzipped if the csv file is not present.  Then the data
+is stored in a variable called fitdata.  The date column is converted from a 
+factor to a date class.
 
+```{r}
+if (!file.exists("activity.csv")){
+        unzip("activity.zip")
+}
+fitdata <- read.csv("activity.csv")
+fitdata$date <- as.Date(fitdata$date, "%Y-%m-%d")
+```
 
 ## What is mean total number of steps taken per day?
 
-
+```{r}
+library(dplyr)
+sums <- summarise(group_by(fitdata, date), sum(steps))
+mean(sums[ ,2], na.rm = TRUE)
+```
 
 ## What is the average daily activity pattern?
 
