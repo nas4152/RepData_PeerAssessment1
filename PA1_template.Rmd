@@ -22,16 +22,38 @@ fitdata$date <- as.Date(fitdata$date, "%Y-%m-%d")
 
 ## What is mean total number of steps taken per day?
 
+First totals were calculated of the steps variable by date, ignoring missing 
+values, and stored into the sums variable.  A histogram of the totals was 
+created.
+
 ```{r}
-library(dplyr)
-sums <- summarise(group_by(fitdata, date), sum(steps))
-mean(sums[ ,2], na.rm = TRUE)
+sums <- aggregate(fitdata$steps, by = list(fitdata$date), sum, na.rm = TRUE)
+library(ggplot2)
+ggplot(sums, aes(x)) + 
+        geom_histogram(bins = 5, fill = "steelblue") +
+        labs(title = "Total Steps per Day") +
+        labs(x = "Total Steps") +
+        labs(y = "Number of Days")
+```
+
+Then the mean and medians are calculated.
+
+```{r}
+mean(sums[ ,2])
+median(sums[ ,2])
 ```
 
 ## What is the average daily activity pattern?
 
-
-
+```{r}
+means <- aggregate(fitdata$steps, list(fitdata$interval), mean, na.rm = TRUE)
+colnames(means) <- c("Interval", "Steps")
+ggplot(means) +
+        geom_line(aes(Interval, Steps),col = "indianred") +
+        labs(y = "Average Number of Steps") + 
+        labs(x = "5-minute Interval") +
+        labs(title = "Average Daily Activity")
+```
 ## Imputing missing values
 
 
