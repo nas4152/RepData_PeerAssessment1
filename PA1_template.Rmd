@@ -24,7 +24,7 @@ fitdata$date <- as.Date(fitdata$date, "%Y-%m-%d")
 
 First totals were calculated of the steps variable by date, ignoring missing 
 values, and stored into the sums variable.  A histogram of the totals was 
-created.
+created.  Missing data was ignored.
 
 ```{r}
 sums <- aggregate(fitdata$steps, by = list(fitdata$date), sum, na.rm = TRUE)
@@ -48,7 +48,7 @@ median(sums[ ,2])
 
 First the mean number of steps across all days for each time interval were 
 calculated.  This was plotted against the 5-min intervals to show the average 
-change in activity over the course of a day.
+change in activity over the course of a day.  Missing data was ignored.
 
 ```{r}
 means <- aggregate(fitdata$steps, list(fitdata$interval), mean, na.rm = TRUE)
@@ -61,7 +61,8 @@ ggplot(means) +
 ```
 
 The maximum average step value was calculated and the associated interval
-reported.
+reported.  This gives the time interval during which the highest number of steps
+on average were recorded.
 
 ```{r}
 stepmax <- max(means$Steps)
@@ -78,7 +79,9 @@ sum(is.na(fitdata$steps))
 I chose to replace missing values with the mean number of steps at that time 
 interval. First the data was split by interval, then missing values were 
 replaced with the column mean.  (The function na.gam.replace replaces missing 
-value with a funcion of the column, with mean being the default)
+value with a funcion of the column, with mean being the default.)  The data 
+was split first to allow the replacement function to be used as is (without
+subsets by interval).  Then the data was recombined.
 
 ```{r}
 library(gam)
@@ -88,8 +91,9 @@ filldata <- unsplit(filldata, fitdata$interval)
 
 ```
 
-Analysis from the mean total was re-run to examine the effects of replacing
-missing values on the totals. 
+Analysis from the mean total section was re-run to examine the effects of 
+replacing missing values on the totals. The same code with the corresponding 
+variable names was used for consistency.
 
 ```{r}
 fillsums <- aggregate(filldata$steps, by = list(filldata$date), sum, na.rm = TRUE)
@@ -108,7 +112,10 @@ median(fillsums[ ,2])
 ```
 
 Because missing values were omitted previously, replacing missing values 
-increased the total steps for every day in which missing values were present.
+increased the total steps for every day in which missing values were present,
+affecting the distribution of the data, the mean, and the median.  The largest 
+change in the distribution is that there are far fewer 0 value totals, and as a
+result the distrabution appears more bell curve-like with the substitutions.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -135,6 +142,7 @@ colnames(wmeans) <- c("interval", "day", "steps")
 ggplot(wmeans) +
         geom_line(aes(interval, steps, color = day)) +
         facet_wrap(~day, ncol = 1, nrow = 2) +
-        guides(color = FALSE)
+        guides(color = FALSE) +
+        labs(x = "5-min Interval", y = "Average Number of Steps")
 ```
 
