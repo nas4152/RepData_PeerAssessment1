@@ -3,12 +3,17 @@
 
 ## Loading and preprocessing the data
 
-First, the dataset is unzipped if the csv file is not present.  Then the data
-is stored in a variable called fitdata.  The date column is converted from a 
-factor to a date class.
+Global options were set to round all calculations to one decimal digit and the 
+threshold for scientific notation was increased.  As the measured variable is an 
+integer (counting steps) further decimal places would be uninformative. 
+
+The dataset is unzipped if the  csv file is not present. Then the data is stored 
+in a variable called fitdata.  The date column is converted from a factor to a 
+date class.  
 
 
 ```r
+options(scipen = 8, digits = 1)
 if (!file.exists("activity.csv")){
         unzip("activity.zip")
 }
@@ -40,20 +45,11 @@ Then the mean and medians are calculated.
 
 
 ```r
-mean(sums[ ,2])
+mean1 <- mean(sums[ ,2])
+median1 <- median(sums[ ,2])
 ```
 
-```
-## [1] 9354.23
-```
-
-```r
-median(sums[ ,2])
-```
-
-```
-## [1] 10395
-```
+The average total number of steps is 9354.2 and the median is 10395.
 
 ## What is the average daily activity pattern?
 
@@ -75,30 +71,27 @@ ggplot(means) +
 ![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
 The maximum average step value was calculated and the associated interval
-reported.  This gives the time interval during which the highest number of steps
-on average were recorded.
+reported.  
 
 
 ```r
 stepmax <- max(means$Steps)
-means$Interval[means$Steps == stepmax]
+interval1 <- means$Interval[means$Steps == stepmax]
 ```
 
-```
-## [1] 835
-```
+The time interval during which the highest number of steps on average were 
+recorded is the 835 minute interval at an average of 206.2 
+steps.
 
 ## Imputing missing values
 
 The number of missing values is calculated.
 
 ```r
-sum(is.na(fitdata$steps))
+nas1 <- sum(is.na(fitdata$steps))
 ```
 
-```
-## [1] 2304
-```
+There are 2304 missing values.
 
 I chose to replace missing values with the mean number of steps at that time 
 interval. First the data was split by interval, then missing values were 
@@ -150,20 +143,12 @@ Then the mean and medians are calculated.
 
 
 ```r
-mean(fillsums[ ,2])
+mean2 <- mean(fillsums[ ,2])
+median2 <- median(fillsums[ ,2])
 ```
 
-```
-## [1] 10766.19
-```
-
-```r
-median(fillsums[ ,2])
-```
-
-```
-## [1] 10766.19
-```
+The mean and median of the data with NA's replaced is 10766.2 and 10766.2,
+respectively.
 
 Because missing values were omitted previously, replacing missing values 
 increased the total steps for every day in which missing values were present,
